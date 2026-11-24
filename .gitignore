@@ -1,6 +1,10 @@
-__pycache__/
-*.pyc
-.venv/
+target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
 .build/
 .codex-finalizer/
 .env
+__pycache__/

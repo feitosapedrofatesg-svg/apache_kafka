@@ -19,7 +19,7 @@ Consulta em 24/11/2026. A documentação de Kafka 4.1 corresponde à família da
 | [LinkedIn: apresentação técnica, 2011](https://www.linkedin.com/blog/engineering/archive/come-linkedin-hear-talk-about-kafka-our-open-source-distributed-pub-sub-messaging-system) | Problema original de logs e atividade em grande volume |
 | [LinkedIn: Kafka Ecosystem, 2016](https://www.linkedin.com/blog/engineering/open-source/kafka-ecosystem-at-linkedin) | Origem em 2010 e adoção no LinkedIn |
 | [Uber: Kafka Tiered Storage, 2024](https://www.uber.com/us/en/blog/kafka-tiered-storage/) | Exemplo real de adoção |
-| [Confluent: cliente Python](https://docs.confluent.io/kafka-clients/python/current/overview.html) | Producer, Consumer e confirmação de envio |
-| [PyPI: confluent-kafka 2.12.0](https://pypi.org/project/confluent-kafka/2.12.0/) | Dependência fixada do laboratório |
+| [Apache Kafka: KafkaProducer Java](https://kafka.apache.org/41/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html) | Publicação e confirmação de envio |
+| [Apache Kafka: KafkaConsumer Java](https://kafka.apache.org/41/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html) | Leitura de eventos e grupos de consumidores |
 
 O cenário de movimentação e alerta do estoQ é uma adaptação didática. Os valores e o produto usados na demonstração são fictícios.

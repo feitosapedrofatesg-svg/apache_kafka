@@ -38,5 +38,17 @@ services:
       kafka:
         condition: service_healthy
 
+  testes:
+    build:
+      context: .
+      target: construcao
+    profiles: [ferramentas]
+    command: [mvn, -B, verify, -Pkafka-real]
+    environment:
+      KAFKA_SERVIDOR: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
 volumes:
   eventos:

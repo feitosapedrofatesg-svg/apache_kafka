@@ -4,7 +4,7 @@ Trabalho do tema **18: plataforma de streaming de eventos**.
 
 A ideia é mostrar o Kafka usando uma situação fácil de entender: entradas e saídas de produtos no estoQ. Um programa envia as movimentações e outro acompanha os eventos para calcular o saldo e avisar quando o estoque fica baixo.
 
-Este é um **laboratório independente, inspirado no estoQ**, com dados fictícios. O programa `produtor.py` representa o sistema enviando eventos. Não existe conexão com a aplicação ou com o banco real do estoQ neste repositório.
+Este é um **laboratório independente, inspirado no estoQ**, com dados fictícios. O programa `Produtor.java` representa o sistema enviando eventos. Não existe conexão com a aplicação ou com o banco real do estoQ neste repositório.
 
 ## Material da apresentação
 
@@ -23,7 +23,7 @@ Produtor (representando o estoQ)
     publica uma movimentação em JSON
 Kafka: tópico estoq.movimentacoes
     guarda o evento e permite sua leitura
-Consumidor Python
+Consumidor Java
     calcula saldo e exibe alerta de estoque baixo
 ```
 
@@ -34,7 +34,7 @@ Consumidor Python
 | Saída de arroz | 9 | 3, com alerta |
 | Nova entrada de arroz | 10 | 13 |
 
-O Kafka transporta e armazena os eventos. **O código Python faz o cálculo e o alerta.** A nova entrada acrescenta outro evento ao histórico. Ela não edita eventos anteriores.
+O Kafka transporta e armazena os eventos. **O código Java faz o cálculo e o alerta.** A nova entrada acrescenta outro evento ao histórico. Ela não edita eventos anteriores.
 
 ## Como preparar
 
@@ -45,10 +45,10 @@ git clone https://github.com/feitosapedrofatesg-svg/apache_kafka.git
 cd apache_kafka
 docker compose build app
 docker compose up -d --wait kafka
-docker compose run --rm app python preparar.py
+docker compose run --rm app preparar
 ```
 
-Faça isso **antes da aula**. Os comandos da demonstração usam as imagens já preparadas. Não precisa instalar Python ou Java no computador. O laboratório usa Kafka **4.1.2**, uma versão fixada para reproduzir o ambiente, em modo KRaft.
+Faça isso **antes da aula**. Os comandos da demonstração usam as imagens já preparadas. O Docker compila e executa o Java, sem exigir JDK ou Maven no computador. O código usa **Java 21 e Maven**, com o cliente oficial `kafka-clients`. O laboratório usa Kafka **4.1.2**, uma versão fixada para reproduzir o ambiente, em modo KRaft.
 
 ## Demonstração rápida
 
@@ -57,15 +57,15 @@ Abra dois terminais na pasta do projeto.
 **Terminal 1: acompanhar os eventos e o saldo**
 
 ```bash
-docker compose run --rm app python consumidor.py
+docker compose run --rm app consumidor
 ```
 
 **Terminal 2: enviar uma movimentação por vez**
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 20
-docker compose run --rm app python produtor.py SAIDA 8
-docker compose run --rm app python produtor.py SAIDA 9
+docker compose run --rm app produtor ENTRADA 20
+docker compose run --rm app produtor SAIDA 8
+docker compose run --rm app produtor SAIDA 9
 ```
 
 O terminal 1 mostra os saldos **20, 12 e 3**. No saldo 3, aparece o alerta de estoque abaixo do mínimo de 5 unidades.
@@ -73,31 +73,40 @@ O terminal 1 mostra os saldos **20, 12 e 3**. No saldo 3, aparece o alerta de es
 Pare o consumidor com **Ctrl+C** e execute o mesmo comando de novo. Ele relê os eventos e reconstrói o saldo 3. Depois envie:
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 10
+docker compose run --rm app produtor ENTRADA 10
 ```
 
 O saldo passa para **13**. Veja o [roteiro do laboratório](docs/LABORATORIO.md) para consultar o tópico, ler apenas o JSON e preparar outro ensaio.
+
+## Código Java para estudar
+
+Abra o `pom.xml` como projeto Maven no IntelliJ, Eclipse ou VS Code. O código fica em `src/main/java/br/com/estoq/kafka`. Veja [a explicação das classes Java](docs/JAVA.md). Para compilar e testar o cálculo fora do Docker, instale JDK 21 e Maven e execute `mvn test`.
+
+O Docker inicia `java -jar /lab/estoq-kafka.jar`. Por isso, basta escrever `app produtor`, `app consumidor` ou `app preparar` nos comandos. Não usamos Spring neste exemplo.
 
 ## Organização dos arquivos
 
 | Arquivo | Função |
 |---|---|
+| `pom.xml` | Define as dependências e o build Maven |
 | `docker-compose.yml` | Sobe o Kafka e configura os programas do laboratório |
-| `preparar.py` | Cria o tópico com uma partição |
-| `produtor.py` | Envia entrada ou saída em JSON |
-| `consumidor.py` | Lê os eventos e mostra saldo e alerta |
-| `estoque.py` | Contém o cálculo de saldo |
-| `test_estoque.py` | Testa cálculo, repetição e dados inválidos |
-| `test_integracao.py` | Testa envio, leitura e reprocessamento com Kafka real |
+| `Preparar.java` | Cria o tópico com uma partição |
+| `Produtor.java` | Envia entrada ou saída em JSON |
+| `Consumidor.java` | Lê os eventos e mostra saldo e alerta |
+| `Estoque.java` | Contém o cálculo de saldo |
+| `src/test/java/.../EstoqueTest.java` | Testa cálculo, repetição e dados inválidos |
+| `src/test/java/.../LaboratorioIT.java` | Testa envio, leitura e reprocessamento com Kafka real |
 
 ## Testes
 
-Com o Kafka iniciado e a imagem da aplicação construída:
+Com o Kafka iniciado, rode os testes JUnit e a integração pelo Maven no Docker:
 
 ```bash
-docker compose run --rm app python -m unittest test_estoque -v
-docker compose run --rm app python -m unittest test_integracao -v
+docker compose build testes
+docker compose run --rm testes
 ```
+
+Para testar apenas o cálculo, use `mvn test` com JDK 21 e Maven locais.
 
 O teste de integração cria e apaga somente um tópico temporário de teste. Ele não usa o histórico da apresentação.
 

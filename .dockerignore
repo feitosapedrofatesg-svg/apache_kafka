@@ -3,4 +3,5 @@
 .codex-finalizer
 apresentacao
 docs
-__pycache__
+target
+.idea

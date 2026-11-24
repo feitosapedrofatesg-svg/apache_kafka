@@ -37,7 +37,7 @@ O Kafka surgiu no LinkedIn em 2010 e teve seu código aberto em 2011. Os princip
 
 **Pessoa 1, 1:35 a 2:30.**
 
-O projeto tem código principalmente em Java e Scala e executa na JVM, a máquina virtual Java. Ele pode rodar em servidores ou em contêineres, como faremos com Docker. O produtor é o programa que envia o evento. O tópico organiza eventos de um assunto, como movimentações de estoque. O broker é o servidor que recebe e guarda os eventos, e vários brokers formam um cluster. O consumidor faz a leitura e executa uma ação. Nossos clientes são em Python. No laboratório, o produtor representa o estoQ e o consumidor calcula o saldo. Esse cálculo pertence ao nosso programa, não acontece automaticamente no Kafka.
+O projeto tem código principalmente em Java e Scala e executa na JVM, a máquina virtual Java. Ele pode rodar em servidores ou em contêineres, como faremos com Docker. O produtor é o programa que envia o evento. O tópico organiza eventos de um assunto, como movimentações de estoque. O broker é o servidor que recebe e guarda os eventos, e vários brokers formam um cluster. O consumidor faz a leitura e executa uma ação. Nossos clientes são em Java. No laboratório, o produtor representa o estoQ e o consumidor calcula o saldo. Esse cálculo pertence ao nosso programa, não acontece automaticamente no Kafka.
 
 ### Slide 5: Partições, offsets e réplicas
 
@@ -89,15 +89,15 @@ docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafk
 No terminal 1:
 
 ```bash
-docker compose run --rm app python consumidor.py
+docker compose run --rm app consumidor
 ```
 
 No terminal 2, um de cada vez:
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 20
-docker compose run --rm app python produtor.py SAIDA 8
-docker compose run --rm app python produtor.py SAIDA 9
+docker compose run --rm app produtor ENTRADA 20
+docker compose run --rm app produtor SAIDA 8
+docker compose run --rm app produtor SAIDA 9
 ```
 
 Fala de apoio: “O produtor representa o estoQ registrando uma movimentação. O Kafka confirma que recebeu o evento. O consumidor lê o JSON e calcula o saldo. Quando o saldo chega a três, nosso programa mostra o alerta porque o mínimo é cinco.”
@@ -107,7 +107,7 @@ Fala de apoio: “O produtor representa o estoQ registrando uma movimentação. 
 No terminal 1, pressionar Ctrl+C e iniciar de novo:
 
 ```bash
-docker compose run --rm app python consumidor.py
+docker compose run --rm app consumidor
 ```
 
 Fala de apoio: “Os eventos continuam guardados mesmo depois da leitura. Esta execução usa um grupo novo e lê desde o início para reconstruir o saldo. Os offsets mostram as posições dos registros dentro da partição.”
@@ -115,7 +115,7 @@ Fala de apoio: “Os eventos continuam guardados mesmo depois da leitura. Esta e
 No terminal 2:
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 10
+docker compose run --rm app produtor ENTRADA 10
 ```
 
 Fala final: “A reposição acrescenta outro evento e o saldo vai para treze. O Kafka transportou e guardou as movimentações. Nosso consumidor fez o cálculo e o alerta. Esse exemplo mostra como eventos poderiam ajudar o estoQ a alimentar outros serviços.”

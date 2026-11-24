@@ -1,7 +1,11 @@
-FROM python:3.12-slim
+FROM maven:3.9.9-eclipse-temurin-21 AS construcao
 WORKDIR /lab
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY *.py ./
-CMD ["python", "consumidor.py"]
+COPY pom.xml .
+COPY src ./src
+RUN mvn -B package
+
+FROM eclipse-temurin:21-jre
+WORKDIR /lab
+COPY --from=construcao /lab/target/estoq-kafka.jar /lab/estoq-kafka.jar
+ENTRYPOINT ["java", "-jar", "/lab/estoq-kafka.jar"]
+CMD ["consumidor"]

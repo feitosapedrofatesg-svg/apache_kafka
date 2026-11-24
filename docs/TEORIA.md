@@ -6,7 +6,7 @@ Apache Kafka é uma plataforma distribuída de streaming de eventos. Ela permite
 
 ## 2. Tecnologia
 
-O projeto tem código principalmente em **Java e Scala** e executa sobre a **JVM**, a máquina virtual Java. Pode rodar em servidores, máquinas virtuais e contêineres. O laboratório usa a imagem oficial do Kafka no Docker e programas em Python como clientes. A linguagem do cliente não precisa ser a mesma do servidor. [Código do projeto](https://github.com/apache/kafka), [documentação do cliente Python](https://docs.confluent.io/kafka-clients/python/current/overview.html)
+O projeto tem código principalmente em **Java e Scala** e executa sobre a **JVM**, a máquina virtual Java. Pode rodar em servidores, máquinas virtuais e contêineres. O laboratório usa a imagem oficial do Kafka no Docker e programas em Java como clientes. A linguagem do cliente não precisa ser a mesma do servidor. [Código do projeto](https://github.com/apache/kafka), [documentação do cliente Java](https://kafka.apache.org/41/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html)
 
 ## 3. Arquitetura
 
@@ -73,7 +73,7 @@ Não. A leitura não apaga o evento. O Kafka mantém os dados de acordo com a po
 O exercício permite dispensá-los em streaming. Aqui acrescentamos novos eventos ao log. Uma correção de negócio deve gerar outro evento. A exclusão por retenção e a compactação são mecanismos diferentes de editar uma linha individual.
 
 **Quem calcula o estoque?**
-O consumidor Python, em `estoque.py`. O Kafka entrega e guarda os eventos.
+O consumidor Java chama `Estoque.java` para calcular o saldo. O Kafka entrega e guarda os eventos.
 
 **Por que o consumidor lê tudo de novo quando reinicia?**
 Ele começa com o saldo em memória vazio e cria um grupo novo. Assim, lê desde o início retido para reconstruir o saldo. Um consumidor real pode usar um grupo fixo e checkpoints, combinados com estado persistente.

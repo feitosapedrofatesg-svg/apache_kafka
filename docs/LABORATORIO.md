@@ -11,7 +11,7 @@
 ```bash
 docker compose build app
 docker compose up -d --wait kafka
-docker compose run --rm app python preparar.py
+docker compose run --rm app preparar
 docker compose ps
 ```
 
@@ -30,7 +30,7 @@ Fala sugerida: “Este tópico guarda as movimentações do estoque. Para a aula
 ## 2. Abrir o consumidor no terminal 1
 
 ```bash
-docker compose run --rm app python consumidor.py
+docker compose run --rm app consumidor
 ```
 
 Ele fica esperando eventos. A mensagem inicial aparece antes da atribuição da partição. Os eventos enviados nesse intervalo também serão lidos, pois ficam guardados no Kafka.
@@ -40,19 +40,19 @@ Ele fica esperando eventos. A mensagem inicial aparece antes da atribuição da 
 Execute um comando de cada vez e mostre a mudança no terminal 1.
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 20
+docker compose run --rm app produtor ENTRADA 20
 ```
 
 Saldo: **20 unidades**.
 
 ```bash
-docker compose run --rm app python produtor.py SAIDA 8
+docker compose run --rm app produtor SAIDA 8
 ```
 
 Saldo: **12 unidades**.
 
 ```bash
-docker compose run --rm app python produtor.py SAIDA 9
+docker compose run --rm app produtor SAIDA 9
 ```
 
 Saldo: **3 unidades**, com alerta de estoque abaixo do mínimo de 5.
@@ -64,7 +64,7 @@ O JSON contém ID, produto, tipo, quantidade e data. A chave Kafka é `ARROZ-5KG
 No terminal 1, pressione **Ctrl+C** e rode novamente:
 
 ```bash
-docker compose run --rm app python consumidor.py
+docker compose run --rm app consumidor
 ```
 
 O programa relê os três eventos e reconstrói os saldos 20, 12 e 3. A leitura anterior não apagou os eventos. O grupo novo e a opção `earliest` permitem essa releitura do histórico ainda retido.
@@ -74,7 +74,7 @@ O programa relê os três eventos e reconstrói os saldos 20, 12 e 3. A leitura 
 No terminal 2:
 
 ```bash
-docker compose run --rm app python produtor.py ENTRADA 10
+docker compose run --rm app produtor ENTRADA 10
 ```
 
 Saldo: **13 unidades**. O consumidor não emite um novo alerta para esse saldo. Os eventos anteriores continuam no histórico.
@@ -86,7 +86,7 @@ Fala sugerida: “A reposição vira um novo evento. O Kafka guarda a movimenta�
 Este comando é opcional e não precisa entrar nos 5 minutos:
 
 ```bash
-docker compose run --rm app python consumidor.py --somente-ler --limite 4 --espera 20
+docker compose run --rm app consumidor --somente-ler --limite 4 --espera 20
 ```
 
 Ele lê os quatro eventos sem calcular saldo e encerra. Use após a sequência completa e com o tópico recém-preparado para o ensaio.
@@ -98,7 +98,7 @@ Pare todos os consumidores com Ctrl+C. Depois execute:
 ```bash
 docker compose down -v
 docker compose up -d --wait kafka
-docker compose run --rm app python preparar.py
+docker compose run --rm app preparar
 ```
 
 **`down -v` apaga o histórico do laboratório.** O projeto Compose tem o nome `estoq-kafka-lab`, separado do estoQ. Faça isso antes de começar outro ensaio, nunca no meio da apresentação. Se não limpar, os eventos de ensaios anteriores também entram no cálculo.
@@ -109,9 +109,9 @@ docker compose run --rm app python preparar.py
 |---|---|
 | Docker não responde | Inicie o Docker Desktop ou o serviço Docker e confira a permissão de acesso |
 | Kafka demora para ficar pronto | Use `docker compose logs --tail 60 kafka` e aguarde o healthcheck |
-| Tópico não existe | Execute `docker compose run --rm app python preparar.py` |
+| Tópico não existe | Execute `docker compose run --rm app preparar` |
 | Saldo diferente do roteiro | Veja se ainda existem eventos de um ensaio anterior |
 | Sem internet na aula | Faça o build e baixe as imagens antes da apresentação |
 | Consumidor encerrou | Leia o erro, confira `docker compose ps` e inicie o consumidor novamente |
 
-Depois de alterar arquivos Python, execute `docker compose build app` outra vez, porque o código é copiado para a imagem.
+Depois de alterar arquivos Java, execute `docker compose build app` outra vez, porque o código é copiado para a imagem.
